@@ -16,7 +16,7 @@ mongoose.connect("mongodb://localhost:27017/mongoPlayground");
 //Mongoose schema
 let teamSchema = new mongoose.Schema({
     teamName: String,
-    scores: [Number]
+    score: [String]
 })
 
 //mongoose model
