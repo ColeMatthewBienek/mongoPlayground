@@ -2,6 +2,7 @@
 const express = require("express");
 const app = express();
 const PORT = 3000;
+const mongoURL = "mongodb://localhost:27017/mongoPlayground";
 const mongoose = require("mongoose");
 
 //const bodyParser = require('body-parser');
@@ -9,9 +10,19 @@ const mongoose = require("mongoose");
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
-
 mongoose.promise = global.promise;
-mongoose.connect("mongodb://localhost:27017/mongoPlayground");
+
+mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true})
+
+const db = mongoose.connection;
+
+db.once('open', _ => {
+    console.log('Database Connected:', mongoURL)
+}) 
+
+db.on('error', err => {
+    console.error('connection error:', err);
+})
 
 //Mongoose schema
 let teamSchema = new mongoose.Schema({
@@ -21,8 +32,6 @@ let teamSchema = new mongoose.Schema({
 
 //mongoose model
 let TeamRecord = mongoose.model("TeamRecords", teamSchema);
-
-
 
 app.get("/",(req,res)=>{
     res.sendFile(__dirname + "/index.html")
@@ -45,13 +54,7 @@ app.post("/addteam",(req, res)=>{
 
 
 
-//endpoint for data from browser
 
-
-
-// app.get ('/',(req,res) => { 
-//     res.send("Hello World!")
-// });
 
 function connectionMessage(errorMsg) {
     let displayMsg = errorMsg ? errorMsg : "Connected to port: " + PORT;
